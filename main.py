@@ -8,12 +8,23 @@ def startDownload():
         ytObject = YouTube(ytLink)
         video = ytObject.streams.get_highest_resolution()
         
-        # Download the video
+        title.configure(text=ytObject.title, text_color="white")
+        fisnishlabel.configure(text="")
         video.download()
-        
-        print("Download Completed")
-    except Exception as e:
-        print(f"Error: {e}")
+        fisnishlabel.configure(text="Downloaded!")
+    except:
+        fisnishlabel.configure(text="Download Error", text_color="red")
+ 
+def on_progress(stream, chunk, bytes_remaining):
+     total_size = stream.filesize
+     bytes_downloaded = total_size - bytes_remaining
+     percentage_of_completion = bytes_downloaded / total_size * 100
+     per = str(int(percentage_of_completion))
+     pPercentage.configure(text=per + '%')
+     pPercentage.update()
+     
+     # update progress bar
+     progresBar.set(float(percentage_of_completion) / 100)
 
 #system setting
 customtkinter.set_appearance_mode("System")
@@ -33,6 +44,17 @@ url_var = tkinter.StringVar()
 link = customtkinter.CTkEntry(app, width=350, height=40,textvariable=url_var)
 link.pack()
 
+# fisnished download
+fisnishlabel = customtkinter.CTkLabel(app, text="")
+fisnishlabel.pack()
+
+# progres precentase
+pPercentage = customtkinter.CTkLabel(app, text="0%")
+pPercentage.pack()
+
+progresBar = customtkinter.CTkProgressBar(app, width=400)
+progresBar.set(0.5)
+progresBar.pack(padx=10, pady=10)
 # Download Button
 download = customtkinter.CTkButton(app, text="Download", command=startDownload)
 download.pack(padx=10, pady=10)
